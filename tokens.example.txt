@@ -1,0 +1,7 @@
+# Format: label|token  (label bebas, tanpa spasi lebih aman pakai -/_)
+# Ambil token dari browser: login di https://eth.blockscout.com/account/merits,
+# DevTools > Network > cek request ke merits.blockscout.com > header
+# Authorization: Bearer <ini tokennya>
+# Contoh:
+# dompet1|<paste-JWT-disini>
+# dompet2|<paste-JWT-disini>

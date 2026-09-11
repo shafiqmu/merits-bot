@@ -1,0 +1,8 @@
+# secrets — JANGAN commit
+tokens.txt
+wallets.txt
+tokens_cache.json
+# generated
+claim.log
+__pycache__/
+*.pyc
