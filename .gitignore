@@ -2,6 +2,7 @@
 tokens.txt
 wallets.txt
 tokens_cache.json
+state.json
 # generated
 claim.log
 __pycache__/
