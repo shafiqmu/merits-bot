@@ -45,12 +45,12 @@ wallet itu **belum klaim hari ini**, baru klaim. Aman dijalankan berulang
 5. Daftar jadwal:
 
 ```sh
-termux-job-scheduler --job-id 777 --period-ms 1200000 \
+termux-job-scheduler --job-id 777 --period-ms 21600000 \
   --task "python3 $HOME/merits-bot/auto.py"
 ```
 
-`--period-ms 1200000` = tiap 20 menit. Android bisa tunda jadi ~25-35 menit
-tergantung baterai — tidak masalah, window claim ~24 jam.
+`--period-ms 21600000` = tiap 6 jam. Android bisa tunda (Doze) — tidak masalah,
+window claim ~24 jam, dan bot cek state tiap kali jalan.
 
 Cek jadwal: `termux-job-scheduler -p` · berhenti: `termux-job-scheduler -c`
 
