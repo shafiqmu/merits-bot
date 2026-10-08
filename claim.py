@@ -150,7 +150,7 @@ def get_balance(token):
         pass
     return ""
 
-LOOP = int(os.environ.get("MERITS_LOOP", "0"))          # 0 = jalan sekali (default lama)
+LOOP = int(os.environ.get("MERITS_LOOP", "999999"))       # default: loop tanpa batas
 LOOP_INTERVAL = int(os.environ.get("MERITS_LOOP_INTERVAL", "86400"))  # 24 jam (detik)
 
 def run_once():
@@ -213,8 +213,9 @@ def run_once():
     return 0
 
 def main():
-    # Mode lama: jalan sekali lalu exit (MERITS_LOOP=0 / tidak diset)
-    if LOOP <= 0:
+    # Mode loop (default): claim -> tunggu 24 jam -> claim lagi, sampai dihentikan (Ctrl+C / kill)
+    # MERITS_LOOP=1 untuk jalan sekali saja (mode lama)
+    if LOOP == 1:
         return run_once()
 
     # Mode loop: claim -> tunggu 24 jam -> claim lagi, sampai dihentikan (Ctrl+C / kill)
