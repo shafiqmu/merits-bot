@@ -3,7 +3,7 @@ Mode 1 (simpel): tokens.txt -> satu JWT per baris, format: label|jwt  ATAU  labe
 Mode 2 (private-key): wallets.txt -> satu key per baris, format: label|0xKEY. Bot auto-login (nonce->sign->login) + cache token.
 Jalankan: python claim.py
 """
-import os, sys, json, base64, urllib.request, urllib.error
+import os, sys, json, base64, time, urllib.request, urllib.error
 from datetime import datetime, timezone, timedelta
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -150,7 +150,10 @@ def get_balance(token):
         pass
     return ""
 
-def main():
+LOOP = int(os.environ.get("MERITS_LOOP", "0"))          # 0 = jalan sekali (default lama)
+LOOP_INTERVAL = int(os.environ.get("MERITS_LOOP_INTERVAL", "86400"))  # 24 jam (detik)
+
+def run_once():
     token_rows = load_lines("tokens.txt")
     wallet_rows = load_lines("wallets.txt")
     # env override: MERITS_TOKENS="label|jwt, label2|jwt2" atau bare jwt koma/newline
@@ -208,6 +211,31 @@ def main():
         print(f"[{tag}] {st.upper()}: {info}{bal} (login baru)")
     print(f"RINGKASAN: {stats.get('ok',0)} claim | {stats.get('skip',0)} skip | {stats.get('expired',0)} expired | {stats.get('error',0)} error")
     return 0
+
+def main():
+    # Mode lama: jalan sekali lalu exit (MERITS_LOOP=0 / tidak diset)
+    if LOOP <= 0:
+        return run_once()
+
+    # Mode loop: claim -> tunggu 24 jam -> claim lagi, sampai dihentikan (Ctrl+C / kill)
+    print(f"== MODE LOOP: claim tiap {LOOP_INTERVAL}s ({LOOP_INTERVAL/3600:.0f} jam) ==")
+    rnd = 0
+    while True:
+        rnd += 1
+        print(f"\n===== PUTARAN #{rnd} — {datetime.now(timezone.utc).isoformat()} =====")
+        try:
+            run_once()
+        except Exception as e:
+            print(f"[LOOP] error di putaran #{rnd}: {e}")
+        if rnd >= LOOP:  # MERITS_LOOP>0 = batas putaran (opsional)
+            print(f"== selesai setelah {rnd} putaran ==")
+            return 0
+        print(f"\n[TUNGGU] tidur {LOOP_INTERVAL/3600:.0f} jam sampai putaran #{rnd+1}...")
+        try:
+            time.sleep(LOOP_INTERVAL)
+        except KeyboardInterrupt:
+            print("\n[STOP] dihentikan user.")
+            return 0
 
 if __name__ == "__main__":
     sys.exit(main())
